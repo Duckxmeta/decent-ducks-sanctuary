@@ -10,32 +10,29 @@ export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const handlePasscodeSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const codes: Record<string, string> = {
-      "Jasmine-JDI-G0": "Super-Admin Access Granted.",
-      "STRAY-G0": "Welcome, Joey's Guardian!",
-      "QUAKEY-G0": "Welcome, Cutie Pie's Guardian!",
-      "PAKK-G0": "Welcome, Jordie's Guardian!",
-      "GODS-G0": "Welcome, Huey's Guardian!",
-      "MIGHTY-DUCKS-2026": "Mighty Ducks Family Access Unlocked!",
-    };
+  e.preventDefault();
+  
+  // .toUpperCase() makes the check case-insensitive!
+  const trimmedCode = passcode.trim().toUpperCase(); 
 
-    const trimmedCode = passcode.trim();
-
-    if (codes[trimmedCode]) {
-      setAccessMessage(codes[trimmedCode]);
-      // If it's the admin code, unlock the dashboard
-      if (trimmedCode === "Jasmine-JDI-G0") {
-        setIsAdmin(true);
-      } else {
-        setIsAdmin(false); // Reset if they enter a non-admin code
-      }
-    } else {
-      setAccessMessage("Invalid Passcode. Please try again.");
-      setIsAdmin(false);
-    }
+  const codes: Record<string, string> = {
+    "JASMINE-JDI-G0": "Super-Admin Access Granted.", // Use ALL CAPS here now
+    "STRAY-G0": "Welcome, Joey's Guardian!",
+    "QUAKEY-G0": "Welcome, Cutie Pie's Guardian!",
+    "PAKK-G0": "Welcome, Jordie's Guardian!",
+    "GODS-G0": "Welcome, Huey's Guardian!",
   };
+
+  if (codes[trimmedCode]) {
+    setAccessMessage(codes[trimmedCode]);
+    if (trimmedCode === "JASMINE-JDI-G0") {
+      setIsAdmin(true);
+    }
+  } else {
+    setAccessMessage("Invalid Passcode. Please try again.");
+    setIsAdmin(false);
+  }
+};
 
   return (
     <main className="min-h-screen bg-sanctuary-cream font-sans text-sanctuary-dark">
