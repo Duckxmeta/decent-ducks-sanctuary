@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-// Defining the Bird type to prevent TypeScript "any" errors during build
 interface Bird {
   id: string;
   name: string | null;
@@ -20,8 +19,17 @@ export default function HeritageGallery() {
 
   useEffect(() => {
     const fetchBirds = async () => {
-      // We initialize the client inside the hook so Vercel doesn't 
-      // crash during the "prerendering" phase of the build.
+      // 1. ENVIRONMENTAL SAFEGUARD: Stops the build-server from crashing
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseKey) {
+        console.warn("Supabase keys not found. Check Vercel environment variables.");
+        setLoading(false);
+        return;
+      }
+
+      // 2. INITIALIZE CLIENT
       const supabase = createClient();
       
       try {
@@ -46,7 +54,7 @@ export default function HeritageGallery() {
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6 animate-pulse">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="aspect-square bg-gray-200 rounded-3xl border-2 border-dashed border-gray-300"></div>
+          <div key={i} className="aspect-square bg-gray-200 rounded-3xl"></div>
         ))}
       </div>
     );
@@ -59,7 +67,6 @@ export default function HeritageGallery() {
           key={bird.id} 
           className="group relative bg-white rounded-[2.5rem] overflow-hidden shadow-lg border-2 border-gray-100 hover:border-sanctuary-gold transition-all duration-500 transform hover:-translate-y-2"
         >
-          {/* Bird Image / Placeholder */}
           <div className="aspect-square bg-sanctuary-cream overflow-hidden relative">
             <img 
               src={bird.image_url || '/images/DDSlogo.png'} 
@@ -73,7 +80,6 @@ export default function HeritageGallery() {
             )}
           </div>
 
-          {/* Bird Info Overlay */}
           <div className="p-6">
             <h4 className="font-serif text-xl text-sanctuary-green font-bold truncate">
               {bird.name || "Unnamed Resident"}
@@ -81,13 +87,6 @@ export default function HeritageGallery() {
             <div className="flex justify-between items-center mt-2">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{bird.breed}</span>
               <span className="text-[10px] font-bold text-sanctuary-gold uppercase">{bird.sex}</span>
-            </div>
-            
-            {/* Detailed hover info */}
-            <div className="mt-4 pt-4 border-t border-gray-50 opacity-0 group-hover:opacity-100 transition-opacity">
-              <p className="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">
-                Origin: <span className="text-sanctuary-green">{bird.origin}</span>
-              </p>
             </div>
           </div>
         </div>

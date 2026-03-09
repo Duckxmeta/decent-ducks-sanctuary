@@ -1,35 +1,37 @@
 "use client";
 
-import React, { Suspense, useEffect, useState } from 'react';
+import React from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import HeritageGallery from '@/components/HeritageGallery';
+
+// THE "MAGIC" FIX: ssr: false tells Vercel NOT to run this during the build.
+const HeritageGallery = dynamic(() => import('@/components/HeritageGallery'), { 
+  ssr: false,
+  loading: () => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 animate-pulse">
+      {[...Array(4)].map((_, i) => (
+        <div key={i} className="aspect-square bg-gray-200 rounded-[2.5rem]"></div>
+      ))}
+    </div>
+  )
+});
 
 export default function FlockPage() {
-  // 1. Add a mounting check to prevent prerendering errors
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // 2. If we are not mounted (i.e., during the Vercel Build), return a shell
-  // This completely stops Vercel from trying to fetch data during build.
-  if (!mounted) {
-    return <div className="min-h-screen bg-sanctuary-cream" />;
-  }
-
   return (
     <main className="min-h-screen bg-sanctuary-cream">
+      
+      {/* NAVIGATION */}
       <nav className="bg-sanctuary-green py-4 px-8 flex justify-between items-center border-b-2 border-sanctuary-gold/50 shadow-md">
         <Link href="/" className="flex items-center gap-3">
           <img src="/images/DDSlogo.png" alt="Logo" className="h-8 w-auto" />
-          <span className="text-sanctuary-gold font-serif font-bold text-lg tracking-tighter">DECENT DUCKS</span>
+          <span className="text-sanctuary-gold font-serif font-bold text-lg tracking-tighter uppercase">DECENT DUCKS</span>
         </Link>
         <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-sanctuary-cream hover:text-sanctuary-gold transition-colors">
           ← Back to Mission
         </Link>
       </nav>
 
+      {/* HEADER */}
       <header className="bg-sanctuary-green text-center py-20 px-6 border-b-4 border-sanctuary-gold shadow-xl">
         <h1 className="text-5xl md:text-7xl font-serif font-bold text-sanctuary-gold mb-4 uppercase tracking-tight">
           The Heritage Tree
@@ -39,10 +41,14 @@ export default function FlockPage() {
         </p>
       </header>
 
+      {/* GALLERY SECTION */}
       <div className="max-w-7xl mx-auto px-6 py-24">
-        <Suspense fallback={<div className="text-center font-black uppercase text-gray-400">Loading Flock...</div>}>
-          <HeritageGallery />
-        </Suspense>
+        <div className="mb-12 flex justify-between items-end border-b border-gray-200 pb-6">
+          <h2 className="text-3xl font-serif text-sanctuary-green font-bold">The Resident Roster</h2>
+          <p className="text-sanctuary-gold font-black uppercase text-[10px] tracking-[0.3em] italic">Nashville, TN</p>
+        </div>
+
+        <HeritageGallery />
       </div>
 
       <footer className="py-20 text-center bg-white border-t border-gray-100">
